@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.PeopleAlt
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -68,9 +69,26 @@ fun UserLoginScreen(
     ic: String,
     onChangeIc: (String) -> Unit,
     pwd: String,
-    onchangePwd: (String) -> Unit
+    onchangePwd: (String) -> Unit,
+    loginError: Boolean,
+    onChangeLoginError: (Boolean) -> Unit
 ) {
     var pwdVisible by remember { mutableStateOf(false) }
+
+    if (loginError) {
+        AlertDialog(
+            onDismissRequest = { onChangeLoginError(false) },
+            title = { Text("Login Error", style = ArimaTypography.displayLarge) },
+            text = { Text("Invalid IC or password. Please try again.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onChangeLoginError(false) }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     Image(
         painter = painterResource(R.drawable.loginpage2),
@@ -400,7 +418,9 @@ fun UserLoginPreview() {
             ic = "",
             onChangeIc = {},
             pwd = "",
-            onchangePwd = {}
+            onchangePwd = {},
+            loginError = false,
+            onChangeLoginError = {}
         )
     }
 }

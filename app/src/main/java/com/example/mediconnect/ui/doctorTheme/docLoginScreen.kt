@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -63,10 +64,26 @@ fun DoctorLoginScreen(
     id: String,
     onChangeId: (String) -> Unit,
     pwd: String,
-    onChangePwd: (String) -> Unit
+    onChangePwd: (String) -> Unit,
+    loginError: Boolean,
+    onChangeLoginError: (Boolean) -> Unit
 ) {
     var pwdVisible by remember { mutableStateOf(false) }
 
+    if (loginError) {
+        AlertDialog(
+            onDismissRequest = { onChangeLoginError(false) },
+            title = { Text("Login Error", style = ArimaTypography.displayLarge) },
+            text = { Text("Invalid ID or password. Please try again.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onChangeLoginError(false) }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
     Image(
         painter = painterResource(R.drawable.loginpage2),
         contentDescription = "LoginPageBackground",
@@ -351,6 +368,8 @@ fun DoctorLoginScreenPreview() {
         id = "",
         onChangeId = {},
         pwd = "",
-        onChangePwd = {}
+        onChangePwd = {},
+        loginError = false,
+        onChangeLoginError = {}
     )
 }

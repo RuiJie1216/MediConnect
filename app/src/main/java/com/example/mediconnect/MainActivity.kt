@@ -9,7 +9,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -85,6 +88,7 @@ fun MainPageApp(
                 val context = LocalContext.current
                 var ic by remember { mutableStateOf("") }
                 var pwd by remember { mutableStateOf("") }
+                var loginError by remember { mutableStateOf(false) }
                 UserLoginScreen(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -93,6 +97,8 @@ fun MainPageApp(
                     onChangeIc = {ic = it},
                     pwd = pwd,
                     onchangePwd = {pwd = it},
+                    loginError = loginError,
+                    onChangeLoginError = {loginError = it},
                     onForgetPwdClick = {
                         navController.navigate(AppScreen.ForgotPwd.name)
                     },
@@ -104,7 +110,7 @@ fun MainPageApp(
                         } else {
                             ic = ""
                             pwd = ""
-                            Toast.makeText(context, "Invalid Account or password.\nPlease input again.", Toast.LENGTH_SHORT).show()
+                            loginError = true
                         }
                     },
                     onSignUpClick = {
@@ -120,6 +126,7 @@ fun MainPageApp(
                 val context = LocalContext.current
                 var id by remember { mutableStateOf("") }
                 var pwd by remember { mutableStateOf("") }
+                var loginError by remember { mutableStateOf(false) }
                 DoctorLoginScreen(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -128,6 +135,8 @@ fun MainPageApp(
                     onChangeId = {id = it},
                     pwd = pwd,
                     onChangePwd = {pwd = it},
+                    loginError = loginError,
+                    onChangeLoginError = {loginError = it},
                     onForgetPwdClick = {
                         navController.navigate(AppScreen.ForgotPwd.name)
                     },
@@ -139,7 +148,7 @@ fun MainPageApp(
                         } else {
                             id = ""
                             pwd = ""
-                            Toast.makeText(context, "Invalid Account or password.\nPlease input again.", Toast.LENGTH_SHORT).show()
+                            loginError = true
                         }
                     },
                     onTurnUsersClick = {
@@ -198,4 +207,26 @@ private fun checkLogin(
     }
 
     return checkAccountValid
+}
+
+
+@Composable
+private fun errorLoginMessage(
+    showMessage: Boolean,
+    onDismiss: () -> Unit
+) {
+    if (showMessage) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Login Error") },
+            text = { Text("Invalid Account or Password. Please try again.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onDismiss() }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
