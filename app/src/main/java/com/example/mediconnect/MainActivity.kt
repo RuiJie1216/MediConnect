@@ -12,12 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mediconnect.ui.ResetPwdScreen
 import com.example.mediconnect.ui.doctorTheme.DocViewModel
 import com.example.mediconnect.ui.doctorTheme.DoctorLoginScreen
@@ -109,8 +108,3 @@ fun MainPageApp(
     }
 }
 
-@Preview
-@Composable
-fun previewPage(modifier: Modifier = Modifier) {
-    MainPageApp()
-}

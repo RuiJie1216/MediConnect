@@ -45,10 +45,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.PeopleAlt
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.unit.sp
+import com.example.mediconnect.AppScreen
+import com.example.mediconnect.ui.LoginChooseButtonBar
 import com.example.mediconnect.ui.theme.MediConnectTheme
 
 
@@ -57,7 +62,9 @@ fun UserLoginScreen(
     modifier: Modifier = Modifier,
     onForgetPwdClick: () -> Unit,
     onLoginClick: (String, String) -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onTurnDoctorClick: () -> Unit,
+    chooseBar: AppScreen
 ) {
     var ic by remember { mutableStateOf("") }
     var pwd by remember { mutableStateOf("") }
@@ -107,7 +114,7 @@ fun UserLoginScreen(
                         .padding(bottom = 20.dp, top = 20.dp)
                 )
 
-                EditIcTextField(
+                EditUserIcTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 45.dp)
@@ -125,7 +132,7 @@ fun UserLoginScreen(
                         .height(20.dp)
                 )
 
-                EditPwdTextField(
+                EditUserPwdTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 45.dp)
@@ -140,11 +147,11 @@ fun UserLoginScreen(
                     pwdVisible = pwdVisible
                 )
 
-                ForgotPwdButton(
+                ForgotUserPwdButton(
                     onClick = onForgetPwdClick
                 )
 
-                LoginButton(
+                LoginUserButton(
                     onClick = {onLoginClick(ic, pwd)},
                     modifier = Modifier
                         .fillMaxWidth()
@@ -165,7 +172,7 @@ fun UserLoginScreen(
                         .padding(bottom = 5.dp)
                 )
 
-                SignInButton(
+                SignInUserButton(
                     onClick = onSignUpClick,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -182,56 +189,27 @@ fun UserLoginScreen(
 
         }
 
+        Spacer(
+            modifier = Modifier
+                .height(15.dp)
+        )
 
 
-        LoginChoseButtonBar(
+        LoginChooseButtonBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            chooseBar = chooseBar,
+            onTurnPageClick = onTurnDoctorClick
         )
 
     }
 }
 
-@Composable
-fun LoginChoseButtonBar(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 60.dp)
-            .size(70.dp)
-            .background(
-                Color(0xFFEBCCFF),
-                shape = RoundedCornerShape(25.dp)
-            ),
-        contentAlignment = Alignment.Center
 
-    ) {
-        Column(
-
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Button(
-                    onClick = {},
-                    modifier = Modifier
-                        .padding(start = 15.dp)
-                ) {
-
-                }
-            }
-        }
-    }
-}
 
 @Composable
-fun SignInButton(
+fun SignInUserButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -252,7 +230,7 @@ fun SignInButton(
 }
 
 @Composable
-fun LoginButton(
+fun LoginUserButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -272,7 +250,7 @@ fun LoginButton(
 }
 
 @Composable
-fun ForgotPwdButton(
+fun ForgotUserPwdButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -289,7 +267,7 @@ fun ForgotPwdButton(
 }
 
 @Composable
-fun EditIcTextField(
+fun EditUserIcTextField(
     modifier: Modifier = Modifier,
     value: String,
     onChangeValue: (String) -> Unit
@@ -338,7 +316,7 @@ fun EditIcTextField(
 }
 
 @Composable
-fun EditPwdTextField(
+fun EditUserPwdTextField(
     modifier: Modifier = Modifier,
     value: String,
     onChangeValue: (String) -> Unit,
@@ -410,7 +388,9 @@ fun UserLoginPreview() {
         UserLoginScreen(
             onForgetPwdClick = {},
             onLoginClick = {_,_ ->},
-            onSignUpClick = {}
+            onSignUpClick = {},
+            chooseBar = AppScreen.UserLogin,
+            onTurnDoctorClick = {}
         )
     }
 }
