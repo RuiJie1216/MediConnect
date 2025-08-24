@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MediConnect</string>
+    <string name="welcome">WELCOME BACK 🌻</string>
+    <string name="forgot_pwd">Forgot Your Password?</string>
+    <string name="login">LOGIN</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="sign_up_message">NOt a member yet? sign up here</string>
+</resources>
