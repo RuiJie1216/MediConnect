@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mediconnect.ui.ResetPwdScreen
 import com.example.mediconnect.ui.doctorTheme.DocViewModel
 import com.example.mediconnect.ui.doctorTheme.DoctorLoginScreen
@@ -54,6 +55,12 @@ fun MainPageApp(
     userViewModel: UserViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentScreen = AppScreen.valueOf(
+        backStackEntry?.destination?.route ?: AppScreen.UserLogin.name
+    )
+
     Scaffold(
     ) { innerPadding ->
 
@@ -79,6 +86,10 @@ fun MainPageApp(
                     },
                     onSignUpClick = {
                         navController.navigate(AppScreen.UserSignUp.name)
+                    },
+                    chooseBar = currentScreen,
+                    onTurnDoctorClick = {
+                        navController.navigate(AppScreen.DoctorLogin.name)
                     }
                 )
             }
@@ -86,7 +97,17 @@ fun MainPageApp(
             composable(route = AppScreen.DoctorLogin.name) {
                 DoctorLoginScreen(
                     modifier = Modifier
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                    onForgetPwdClick = {
+                        navController.navigate(AppScreen.ForgotPwd.name)
+                    },
+                    onLoginClick = { id: String, pwd: String ->
+
+                    },
+                    chooseBar = currentScreen,
+                    onTurnUsersClick = {
+                        navController.navigate(AppScreen.UserLogin.name)
+                    }
                 )
             }
 
