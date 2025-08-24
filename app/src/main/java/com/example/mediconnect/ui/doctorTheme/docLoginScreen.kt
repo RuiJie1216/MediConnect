@@ -1,15 +1,12 @@
 package com.example.mediconnect.ui.doctorTheme
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +43,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.mediconnect.AppScreen
 import com.example.mediconnect.R
 import com.example.mediconnect.ui.LoginChooseButtonBar
@@ -183,11 +184,22 @@ fun DoctorLoginScreen(
 
 @Composable
 fun LoginDocButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    modifier: Modifier = Modifier
 ) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = ("login")) {
+        composable(route = "login") {
+            LoginDocButton()
+        }
+        composable(route = "home_page") {
+            DoctorHomeScreen(navController, modifier)
+        }
+    }
     Button(
-        onClick = onClick,
+        onClick = {
+            navController.navigate(route = "home_page")
+                  },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
@@ -203,7 +215,6 @@ fun LoginDocButton(
 
 @Composable
 fun ForgotDocPwdButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     TextButton(
