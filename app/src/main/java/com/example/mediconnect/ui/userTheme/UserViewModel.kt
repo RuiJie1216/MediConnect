@@ -11,7 +11,7 @@ class UserViewModel: ViewModel() {
     private val _userUiState = MutableStateFlow(UserUiState())
     val userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
 
-    fun setID(ic: String) {
+    fun setIC(ic: String) {
         _userUiState.update { current ->
             current.copy(
                 ic = ic

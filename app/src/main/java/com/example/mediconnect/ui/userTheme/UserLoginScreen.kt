@@ -47,6 +47,22 @@ import com.example.mediconnect.R
 import com.example.mediconnect.ui.LoginChooseButtonBar
 import com.example.mediconnect.ui.theme.ArimaTypography
 import com.example.mediconnect.ui.theme.BalooTypography
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.PeopleAlt
+import androidx.compose.material3.AlertDialog
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.unit.sp
+import com.example.mediconnect.AppScreen
+import com.example.mediconnect.ui.LoginChooseButtonBar
 import com.example.mediconnect.ui.theme.MediConnectTheme
 
 
@@ -54,14 +70,33 @@ import com.example.mediconnect.ui.theme.MediConnectTheme
 fun UserLoginScreen(
     modifier: Modifier = Modifier,
     onForgetPwdClick: () -> Unit,
-    onLoginClick: (String, String) -> Unit,
+    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     onTurnDoctorClick: () -> Unit,
-    chooseBar: AppScreen
+    chooseBar: AppScreen,
+    ic: String,
+    onChangeIc: (String) -> Unit,
+    pwd: String,
+    onchangePwd: (String) -> Unit,
+    loginError: Boolean,
+    onChangeLoginError: (Boolean) -> Unit
 ) {
-    var ic by remember { mutableStateOf("") }
-    var pwd by remember { mutableStateOf("") }
     var pwdVisible by remember { mutableStateOf(false) }
+
+    if (loginError) {
+        AlertDialog(
+            onDismissRequest = { onChangeLoginError(false) },
+            title = { Text("Login Error", style = ArimaTypography.displayLarge) },
+            text = { Text("Invalid IC or password. Please try again.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onChangeLoginError(false) }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     Image(
         painter = painterResource(R.drawable.loginpage2),
@@ -117,7 +152,7 @@ fun UserLoginScreen(
                             shape = RoundedCornerShape(35.dp)
                         ),
                     value = ic,
-                    onChangeValue = {ic = it}
+                    onChangeValue = onChangeIc
                 )
 
                 Spacer(
@@ -135,7 +170,7 @@ fun UserLoginScreen(
                             shape = RoundedCornerShape(35.dp)
                         ),
                     value = pwd,
-                    onChangeValue = {pwd = it},
+                    onChangeValue = onchangePwd,
                     onClick = {pwdVisible = !pwdVisible},
                     pwdVisible = pwdVisible
                 )
@@ -145,7 +180,9 @@ fun UserLoginScreen(
                 )
 
                 LoginUserButton(
-                    onClick = {onLoginClick(ic, pwd)},
+                    onClick = onLoginClick,
+                    ic = ic,
+                    pwd = pwd,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 70.dp)
@@ -187,7 +224,6 @@ fun UserLoginScreen(
                 .height(15.dp)
         )
 
-
         LoginChooseButtonBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -225,11 +261,14 @@ fun SignInUserButton(
 @Composable
 fun LoginUserButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    ic: String,
+    pwd: String
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
+        enabled = ic.isNotEmpty() && pwd.isNotEmpty() && pwd.length >= 6,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
             contentColor = Color.White
@@ -291,7 +330,7 @@ fun EditUserIcTextField(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,    // 聚焦时底线
+                    focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
@@ -379,10 +418,16 @@ fun UserLoginPreview() {
     MediConnectTheme {
         UserLoginScreen(
             onForgetPwdClick = {},
-            onLoginClick = {_,_ ->},
+            onLoginClick = {},
             onSignUpClick = {},
             chooseBar = AppScreen.UserLogin,
-            onTurnDoctorClick = {}
+            onTurnDoctorClick = {},
+            ic = "",
+            onChangeIc = {},
+            pwd = "",
+            onchangePwd = {},
+            loginError = false,
+            onChangeLoginError = {}
         )
     }
 }

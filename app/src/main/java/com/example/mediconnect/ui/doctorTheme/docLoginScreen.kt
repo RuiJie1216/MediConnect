@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -58,14 +59,32 @@ import com.example.mediconnect.ui.theme.BalooTypography
 fun DoctorLoginScreen(
     modifier: Modifier = Modifier,
     onForgetPwdClick: () -> Unit,
-    onLoginClick: (String, String) -> Unit,
+    onLoginClick: () -> Unit,
     onTurnUsersClick: () -> Unit,
-    chooseBar: AppScreen
+    chooseBar: AppScreen,
+    id: String,
+    onChangeId: (String) -> Unit,
+    pwd: String,
+    onChangePwd: (String) -> Unit,
+    loginError: Boolean,
+    onChangeLoginError: (Boolean) -> Unit
 ) {
-    var id by remember { mutableStateOf("") }
-    var pwd by remember { mutableStateOf("") }
     var pwdVisible by remember { mutableStateOf(false) }
 
+    if (loginError) {
+        AlertDialog(
+            onDismissRequest = { onChangeLoginError(false) },
+            title = { Text("Login Error", style = ArimaTypography.displayLarge) },
+            text = { Text("Invalid ID or password. Please try again.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onChangeLoginError(false) }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
     Image(
         painter = painterResource(R.drawable.loginpage2),
         contentDescription = "LoginPageBackground",
@@ -107,7 +126,7 @@ fun DoctorLoginScreen(
                     text = stringResource(R.string.welcome),
                     style = ArimaTypography.displayLarge,
                     modifier = Modifier
-                        .padding(bottom = 50.dp, top = 50.dp)
+                        .padding(bottom = 30.dp, top = 50.dp)
                 )
 
                 EditDocIdTextField(
@@ -120,7 +139,7 @@ fun DoctorLoginScreen(
                             shape = RoundedCornerShape(35.dp)
                         ),
                     value = id,
-                    onChangeValue = {id = it}
+                    onChangeValue = onChangeId
                 )
 
                 Spacer(
@@ -138,7 +157,7 @@ fun DoctorLoginScreen(
                             shape = RoundedCornerShape(35.dp)
                         ),
                     value = pwd,
-                    onChangeValue = {pwd = it},
+                    onChangeValue = onChangePwd,
                     onClick = {pwdVisible = !pwdVisible},
                     pwdVisible = pwdVisible
                 )
@@ -148,7 +167,9 @@ fun DoctorLoginScreen(
                 )
 
                 LoginDocButton(
-                    onClick = {onLoginClick(id, pwd)},
+                    onClick = onLoginClick,
+                    id = id,
+                    pwd = pwd,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 70.dp)
@@ -158,7 +179,7 @@ fun DoctorLoginScreen(
 
                 Spacer(
                     modifier = Modifier
-                        .height(30.dp)
+                        .height(50.dp)
                 )
 
             }
@@ -184,7 +205,10 @@ fun DoctorLoginScreen(
 
 @Composable
 fun LoginDocButton(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    id: String,
+    pwd: String
 ) {
     val navController = rememberNavController()
 
@@ -201,6 +225,7 @@ fun LoginDocButton(
             navController.navigate(route = "home_page")
                   },
         modifier = modifier,
+        enabled = id.isNotEmpty() && pwd.isNotEmpty() && pwd.length >= 6,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
             contentColor = Color.White
@@ -255,14 +280,14 @@ fun EditDocIdTextField(
             )
 
             TextField(
-                placeholder = {Text("IC / Passport No", color = Color.Gray)},
+                placeholder = {Text("ID", color = Color.Gray)},
                 value = value,
                 onValueChange = onChangeValue,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,    // 聚焦时底线
+                    focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
@@ -349,8 +374,14 @@ fun EditDocPwdTextField(
 fun DoctorLoginScreenPreview() {
     DoctorLoginScreen(
         onForgetPwdClick = {},
-        onLoginClick = {_,_ ->},
+        onLoginClick = {},
         chooseBar = AppScreen.UserLogin,
-        onTurnUsersClick = {}
+        onTurnUsersClick = {},
+        id = "",
+        onChangeId = {},
+        pwd = "",
+        onChangePwd = {},
+        loginError = false,
+        onChangeLoginError = {}
     )
 }
