@@ -61,13 +61,15 @@ import com.example.mediconnect.ui.theme.MediConnectTheme
 fun UserLoginScreen(
     modifier: Modifier = Modifier,
     onForgetPwdClick: () -> Unit,
-    onLoginClick: (String, String) -> Unit,
+    onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     onTurnDoctorClick: () -> Unit,
-    chooseBar: AppScreen
+    chooseBar: AppScreen,
+    ic: String,
+    onChangeIc: (String) -> Unit,
+    pwd: String,
+    onchangePwd: (String) -> Unit
 ) {
-    var ic by remember { mutableStateOf("") }
-    var pwd by remember { mutableStateOf("") }
     var pwdVisible by remember { mutableStateOf(false) }
 
     Image(
@@ -124,7 +126,7 @@ fun UserLoginScreen(
                             shape = RoundedCornerShape(35.dp)
                         ),
                     value = ic,
-                    onChangeValue = {ic = it}
+                    onChangeValue = onChangeIc
                 )
 
                 Spacer(
@@ -142,7 +144,7 @@ fun UserLoginScreen(
                             shape = RoundedCornerShape(35.dp)
                         ),
                     value = pwd,
-                    onChangeValue = {pwd = it},
+                    onChangeValue = onchangePwd,
                     onClick = {pwdVisible = !pwdVisible},
                     pwdVisible = pwdVisible
                 )
@@ -152,7 +154,9 @@ fun UserLoginScreen(
                 )
 
                 LoginUserButton(
-                    onClick = {onLoginClick(ic, pwd)},
+                    onClick = onLoginClick,
+                    ic = ic,
+                    pwd = pwd,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 70.dp)
@@ -194,7 +198,6 @@ fun UserLoginScreen(
                 .height(15.dp)
         )
 
-
         LoginChooseButtonBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -232,11 +235,14 @@ fun SignInUserButton(
 @Composable
 fun LoginUserButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    ic: String,
+    pwd: String
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
+        enabled = ic.isNotEmpty() && pwd.isNotEmpty() && pwd.length >= 6,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
             contentColor = Color.White
@@ -299,7 +305,7 @@ fun EditUserIcTextField(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,    // 聚焦时底线
+                    focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
@@ -387,10 +393,14 @@ fun UserLoginPreview() {
     MediConnectTheme {
         UserLoginScreen(
             onForgetPwdClick = {},
-            onLoginClick = {_,_ ->},
+            onLoginClick = {},
             onSignUpClick = {},
             chooseBar = AppScreen.UserLogin,
-            onTurnDoctorClick = {}
+            onTurnDoctorClick = {},
+            ic = "",
+            onChangeIc = {},
+            pwd = "",
+            onchangePwd = {}
         )
     }
 }
