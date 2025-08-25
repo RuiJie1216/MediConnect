@@ -2,26 +2,49 @@ package com.example.mediconnect.ui.doctorTheme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,159 +61,140 @@ import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DoctorHomeScreen(navController: NavHostController, modifier: Modifier ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Row(
+fun DoctorHomeScreen(
+    modifier: Modifier = Modifier,
+    onAppointmentClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onPatientClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Row {
+            Button(
+                onClick = onAppointmentClick,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(125.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFCBFFFC),
+                    contentColor = Color.Black
+                )
+
+            ) {
+                Text("Appointment List")
+            }
+
+            Column {
+                Button(
+                    onClick = onProfileClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally),
-                ) {
-                    Text(
-                        text = "MEDICONNECT",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
-                    )
-                }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF00C8B3),
-                    titleContentColor = Color.White
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            Row {
-                Button(
-                    onClick = { navController.navigate("appointments") },
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .height(125.dp),
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFCBFFFC),
+                        containerColor = Color(0xFFC7FFEC),
                         contentColor = Color.Black
                     )
 
                 ) {
-                    Text("Appointment List")
+                    Text("My Profile")
                 }
 
-                Column {
-                    Button(
-                        onClick = { navController.navigate("profile") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFC7FFEC),
-                            contentColor = Color.Black
-                        )
-
-                    ) {
-                        Text("My Profile")
-                    }
-
-                    Button(
-                        onClick = { navController.navigate("patients") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF5EFFC9),
-                            contentColor = Color.Black
-                        )
-                    ) {
-                        Text("Patients Information")
-                    }
+                Button(
+                    onClick = onPatientClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF5EFFC9),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Patients Information")
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Current Appointment",
-                style = MaterialTheme.typography.titleMedium,
-                fontStyle = FontStyle.Italic,
-                fontSize = 20.sp,
+        Text(text = "Current Appointment",
+            style = MaterialTheme.typography.titleMedium,
+            fontStyle = FontStyle.Italic,
+            fontSize = 20.sp,
+            modifier = Modifier
+                .padding(8.dp))
+
+        Column(modifier = modifier
+            .align(Alignment.CenterHorizontally)
+        ) {
+            Box(
                 modifier = Modifier
-                    .padding(8.dp))
+                    .fillMaxWidth(0.95F)
 
-            Column(modifier = modifier
-                .align(Alignment.CenterHorizontally)
+                    .height(150.dp)
+                    .border(
+                        width = 1.dp,
+                        color = Color.Black,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.95F)
-
-                        .height(150.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Color.Black,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-
-                        .background(MaterialTheme.colorScheme.background),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "📅 Date: 17/08/2025",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Divider(
-                            color = Color.Black,
-                            thickness = 1.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-
+                Column {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
-                            text = "Lew Yao Bing - 8:00AM",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "Tan Chin Hua - 8:30AM",
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "Lee Kuan Ying - 9:00AM",
-                            modifier = Modifier.padding(start = 8.dp)
+                            text = "📅 Date: 17/08/2025",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
                         )
                     }
 
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HorizontalDivider(
+                        color = Color.Black,
+                        thickness = 1.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Lew Yao Bing - 8:00AM",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Tan Chin Hua - 8:30AM",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Lee Kuan Ying - 9:00AM",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 }
+
             }
         }
     }
 }
 @Composable
-fun MediConnectApp() {
+fun DocMain() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = "home"
     ) {
-        composable("home") { DoctorHomeScreen(navController, modifier = Modifier) }
-        composable("patients") { PatientsScreen() }
+        //composable("home") { DoctorHomeScreen(navController, modifier = Modifier) }
+        //composable("patients") { PatientsScreen(navController) }
         composable("appointments") { AppointmentScreen() }
         composable("profile") { ProfileScreen() }
         composable("consultation") { ConsultationScreen() }
@@ -198,10 +202,11 @@ fun MediConnectApp() {
     }
 }
 
-@Composable
-fun PatientsScreen() {
 
-}
+
+
+//RJ: 每个screen一个 kt file，这样preview容易看
+
 @Composable
 fun AppointmentScreen(){
 
@@ -224,7 +229,11 @@ fun PatientDetailScreen() {
 @Preview(showBackground = true)
 @Composable
 fun Final() {
-    DoctorHomeScreen(navController = rememberNavController(), modifier = Modifier)
+    DoctorHomeScreen(
+        onPatientClick = {},
+        onProfileClick = {},
+        onAppointmentClick = {}
+    )
 }
 /*
 fun Logout(navController: NavController) {

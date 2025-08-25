@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -65,26 +64,10 @@ fun DoctorLoginScreen(
     id: String,
     onChangeId: (String) -> Unit,
     pwd: String,
-    onChangePwd: (String) -> Unit,
-    loginError: Boolean,
-    onChangeLoginError: (Boolean) -> Unit
+    onChangePwd: (String) -> Unit
 ) {
     var pwdVisible by remember { mutableStateOf(false) }
 
-    if (loginError) {
-        AlertDialog(
-            onDismissRequest = { onChangeLoginError(false) },
-            title = { Text("Login Error", style = ArimaTypography.displayLarge) },
-            text = { Text("Invalid ID or password. Please try again.") },
-            confirmButton = {
-                TextButton(
-                    onClick = { onChangeLoginError(false) }
-                ) {
-                    Text("OK")
-                }
-            }
-        )
-    }
     Image(
         painter = painterResource(R.drawable.loginpage2),
         contentDescription = "LoginPageBackground",
@@ -210,20 +193,9 @@ fun LoginDocButton(
     id: String,
     pwd: String
 ) {
-    val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = ("login")) {
-        composable(route = "login") {
-            LoginDocButton()
-        }
-        composable(route = "home_page") {
-            DoctorHomeScreen(navController, modifier)
-        }
-    }
     Button(
-        onClick = {
-            navController.navigate(route = "home_page")
-                  },
+        onClick = onClick,
         modifier = modifier,
         enabled = id.isNotEmpty() && pwd.isNotEmpty() && pwd.length >= 6,
         colors = ButtonDefaults.buttonColors(
@@ -236,6 +208,7 @@ fun LoginDocButton(
             style = ArimaTypography.displayMedium
         )
     }
+
 }
 
 @Composable
@@ -380,8 +353,6 @@ fun DoctorLoginScreenPreview() {
         id = "",
         onChangeId = {},
         pwd = "",
-        onChangePwd = {},
-        loginError = false,
-        onChangeLoginError = {}
+        onChangePwd = {}
     )
 }

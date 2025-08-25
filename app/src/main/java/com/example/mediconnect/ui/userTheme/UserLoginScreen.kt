@@ -48,20 +48,15 @@ import com.example.mediconnect.ui.LoginChooseButtonBar
 import com.example.mediconnect.ui.theme.ArimaTypography
 import com.example.mediconnect.ui.theme.BalooTypography
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.PeopleAlt
-import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
-import com.example.mediconnect.AppScreen
 import com.example.mediconnect.ui.LoginChooseButtonBar
 import com.example.mediconnect.ui.theme.MediConnectTheme
 
@@ -77,26 +72,9 @@ fun UserLoginScreen(
     ic: String,
     onChangeIc: (String) -> Unit,
     pwd: String,
-    onchangePwd: (String) -> Unit,
-    loginError: Boolean,
-    onChangeLoginError: (Boolean) -> Unit
+    onchangePwd: (String) -> Unit
 ) {
     var pwdVisible by remember { mutableStateOf(false) }
-
-    if (loginError) {
-        AlertDialog(
-            onDismissRequest = { onChangeLoginError(false) },
-            title = { Text("Login Error", style = ArimaTypography.displayLarge) },
-            text = { Text("Invalid IC or password. Please try again.") },
-            confirmButton = {
-                TextButton(
-                    onClick = { onChangeLoginError(false) }
-                ) {
-                    Text("OK")
-                }
-            }
-        )
-    }
 
     Image(
         painter = painterResource(R.drawable.loginpage2),
@@ -425,9 +403,7 @@ fun UserLoginPreview() {
             ic = "",
             onChangeIc = {},
             pwd = "",
-            onchangePwd = {},
-            loginError = false,
-            onChangeLoginError = {}
+            onchangePwd = {}
         )
     }
 }
