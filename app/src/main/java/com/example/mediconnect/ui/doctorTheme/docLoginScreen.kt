@@ -1,6 +1,5 @@
 package com.example.mediconnect.ui.doctorTheme
 
-import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -43,10 +42,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.mediconnect.AppScreen
 import com.example.mediconnect.R
 import com.example.mediconnect.ui.LoginChooseButtonBar
@@ -339,7 +334,7 @@ fun EditDocPwdTextField(
                 Icon(
                     imageVector = if(pwdVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                     contentDescription = if (pwdVisible) "Hide password" else "Show password",
-                    tint = Color.Black
+                    tint = Color.Gray
                 )
             }
 

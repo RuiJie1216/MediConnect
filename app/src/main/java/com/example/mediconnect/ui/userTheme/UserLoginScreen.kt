@@ -388,7 +388,7 @@ fun EditUserPwdTextField(
                 Icon(
                     imageVector = if(pwdVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                     contentDescription = if (pwdVisible) "Hide password" else "Show password",
-                    tint = Color.Black
+                    tint = Color.Gray
                 )
             }
 

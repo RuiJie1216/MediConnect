@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,11 +63,13 @@ import com.example.mediconnect.data.AccountData
 import com.example.mediconnect.data.DocUiState
 import com.example.mediconnect.data.UserUiState
 import com.example.mediconnect.ui.ResetPwdScreen
+import com.example.mediconnect.ui.ScreenViewModel
 import com.example.mediconnect.ui.doctorTheme.DocMain
 import com.example.mediconnect.ui.doctorTheme.DocViewModel
 import com.example.mediconnect.ui.doctorTheme.DoctorHomeScreen
 import com.example.mediconnect.ui.doctorTheme.DoctorLoginScreen
 import com.example.mediconnect.ui.doctorTheme.PatientsScreen
+import com.example.mediconnect.ui.doctorTheme.SearchState
 import com.example.mediconnect.ui.theme.MediConnectTheme
 import com.example.mediconnect.ui.userTheme.UserLoginScreen
 import com.example.mediconnect.ui.userTheme.UserSignUpScreen1
@@ -74,24 +77,31 @@ import com.example.mediconnect.ui.userTheme.UserSignUpScreen2
 import com.example.mediconnect.ui.userTheme.UserViewModel
 
 
-enum class AppScreen(val hasTopBar: Boolean, val hasReturn: Boolean) {
-    DoctorLogin(false, false),
-    UserLogin(false,false),
-    UserSignUp(true, true),
-    ForgotPwd(true, true),
-    UserMain(true, false),
-    DoctorMain(true, false),
-    DoctorPatient(true, true)
+enum class AppScreen(
+    val hasReturn: Boolean
+) {
+    //Login Page
+    DoctorLogin(false),
+    UserLogin(false),
+    UserSignUp(true),
+    ForgotPwd(true),
+
+    //User
+    UserSystem(false),
+    UserMain(false),
+
+    //Doctor
+    DoctorSystem(false),
+    DoctorMain(false),
+    DoctorPatient(true)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarScreen(
     currentScreen: AppScreen,
-    docViewModel: DocViewModel,
-    userViewModel: UserViewModel,
-    docUiState: DocUiState,
-    userUiState: UserUiState,
+    searchState: SearchState,
+    screen: Int,
     navigate: (AppScreen) -> Unit
 ) {
     when(currentScreen) {
@@ -118,15 +128,11 @@ fun TopBarScreen(
             )
         }
         AppScreen.DoctorPatient -> {
-            LaunchedEffect(Unit) {
-                docViewModel.setSearchQuery("")
-            }
-
             TopAppBar(
                 title = {
                     TextField(
-                        value = docUiState.searchQuery,
-                        onValueChange = { docViewModel.setSearchQuery(it) },
+                        value = searchState.searchQuery,
+                        onValueChange = { searchState.searchQuery = it },
                         placeholder = { Text("Search patients...") },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
@@ -186,12 +192,7 @@ fun TopBarScreen(
         AppScreen.UserMain -> {
 
         }
-        AppScreen.UserLogin -> {
-
-        }
-        AppScreen.DoctorLogin -> {
-
-        }
+        else -> {}
     }
 }
 
@@ -212,26 +213,25 @@ fun MainPageApp(
     modifier: Modifier = Modifier,
     docViewModel: DocViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel(),
+    screenVM: ScreenViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
 
     val docUiState by docViewModel.docUiState.collectAsState()
     val userUiState by userViewModel.userUiState.collectAsState()
+    val screen by screenVM.step.collectAsState()
+    val searchState = remember { SearchState() }
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = AppScreen.valueOf(
-        backStackEntry?.destination?.route ?: AppScreen.UserLogin.name
-    )
+    val currentScreen = AppScreen.entries.find { it.name == backStackEntry?.destination?.route } ?: AppScreen.UserLogin
+
 
     Scaffold(
         topBar = {
-            if (currentScreen.hasTopBar)
                 TopBarScreen(
                     currentScreen = currentScreen,
-                    docViewModel = docViewModel,
-                    userViewModel = userViewModel,
-                    docUiState = docUiState,
-                    userUiState = userUiState,
+                    screen = screen,
+                    searchState = searchState,
                     navigate = {if (currentScreen.hasReturn) navController.navigate(it.name) }
                 )
         }
@@ -246,13 +246,12 @@ fun MainPageApp(
                 .fillMaxSize()
         ) {
             composable(route = AppScreen.UserLogin.name) {
-                val context = LocalContext.current
                 var ic by remember { mutableStateOf("") }
                 var pwd by remember { mutableStateOf("") }
                 var loginError by remember { mutableStateOf(false) }
                 if (loginError) {
                     ErrorLoginMessage(
-                        showMessage = loginError,
+                        showMessage = true,
                         onDismiss = {loginError = false}
                     )
                 }
@@ -269,7 +268,7 @@ fun MainPageApp(
                     },
                     onLoginClick = {
                         if (checkLogin(icId = ic, pwd = pwd, person = "user")) {
-                            navController.navigate(AppScreen.UserMain.name)
+                            navController.navigate(AppScreen.UserSystem.name)
                             userViewModel.setIC(ic)
                             userViewModel.setPwd(pwd)
                         } else {
@@ -288,7 +287,6 @@ fun MainPageApp(
             }
 
             composable(route = AppScreen.DoctorLogin.name) {
-                val context = LocalContext.current
                 var id by remember { mutableStateOf("") }
                 var pwd by remember { mutableStateOf("") }
                 var loginError by remember { mutableStateOf(false) }
@@ -311,7 +309,7 @@ fun MainPageApp(
                     },
                     onLoginClick = {
                         if (checkLogin(icId = id, pwd = pwd, person = "doctor")) {
-                            navController.navigate(AppScreen.DoctorMain.name)
+                            navController.navigate(AppScreen.DoctorSystem.name)
                             docViewModel.setID(id)
                             docViewModel.setPwd(pwd)
                         } else {
@@ -334,11 +332,13 @@ fun MainPageApp(
             }
 
             composable(route = AppScreen.UserSignUp.name) {
+                LaunchedEffect(Unit) {
+                    screenVM.reset()
+                }
                 var existPatient by remember { mutableStateOf<Boolean?>(null) }
                 var ic by remember { mutableStateOf("") }
                 var name by remember { mutableStateOf("") }
                 var read by remember { mutableStateOf(false) }
-                var screen by remember { mutableIntStateOf(1) }
 
                 when (screen) {
                     1 -> UserSignUpScreen1(
@@ -353,41 +353,58 @@ fun MainPageApp(
                         onChangeName = {name = it},
                         read = read,
                         onChangeRead = {read = it},
-                        onNextClick = {screen = 2}
+                        onNextClick = {screenVM.setStep(2)}
                     )
                     2 -> UserSignUpScreen2(
                         modifier = Modifier
                             .fillMaxHeight()
                             .background(MaterialTheme.colorScheme.background),
-                        onBackClick = {screen = 1}
+                        onBackClick = {screenVM.setStep(1)}
+                    )
+                }
+            }
+
+            navigation(
+                startDestination = AppScreen.UserMain.name,
+                route = AppScreen.UserSystem.name
+            ) {
+                composable(route = AppScreen.UserMain.name) {
+
+                }
+            }
+
+            navigation(
+                startDestination = AppScreen.DoctorMain.name,
+                route = AppScreen.DoctorSystem.name
+            ) {
+                composable(route = AppScreen.DoctorMain.name) {
+                    DoctorHomeScreen(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        onAppointmentClick = {},
+                        onProfileClick = {},
+                        onPatientClick = {
+                            navController.navigate(AppScreen.DoctorPatient.name)
+                        }
+                    )
+                }
+
+                composable(route = AppScreen.DoctorPatient.name) {
+                    PatientsScreen(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        onAddClick = {},
+                        onBackClick = {},
+                        searchState = searchState,
+                        onPatientDetailClick = {},
                     )
                 }
             }
 
 
 
-            composable(route = AppScreen.DoctorMain.name) {
-                DoctorHomeScreen(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    onAppointmentClick = {},
-                    onProfileClick = {},
-                    onPatientClick = {
-                        navController.navigate(AppScreen.DoctorPatient.name)
-                    }
-                )
-            }
 
-            composable(route = AppScreen.DoctorPatient.name) {
-                PatientsScreen(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    docUiState = docUiState,
-                    onAddClick = {},
-                    onBackClick = {},
-                    onPatientDetailClick = {},
-                )
-            }
+
 
 
         }

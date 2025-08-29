@@ -27,14 +27,6 @@ class DocViewModel: ViewModel() {
         }
     }
 
-    fun setSearchQuery(searchQuery: String) {
-        _docUiState.update { current ->
-            current.copy(
-                searchQuery = searchQuery
-            )
-        }
-    }
-
 
 
 
