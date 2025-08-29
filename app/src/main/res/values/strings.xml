@@ -4,5 +4,12 @@
     <string name="forgot_pwd">Forgot Your Password?</string>
     <string name="login">LOGIN</string>
     <string name="sign_up">SIGN UP</string>
+    <string name="sign_up_top">Sign Up</string>
+    <string name="about_me">About Me</string>
     <string name="sign_up_message">NOt a member yet? sign up here</string>
+    <string name="exist_patient">Are you existing patient?</string>
+    <string name="ic_passport">IC/Passport No</string>
+    <string name="question1">I Have Read and Agreed the Terms and Conditions</string>
+    <string name="verify">Verify</string>
+    <string name="full_name">Full Name</string>
 </resources>

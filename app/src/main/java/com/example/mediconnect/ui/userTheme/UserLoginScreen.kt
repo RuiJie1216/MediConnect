@@ -1,5 +1,6 @@
 package com.example.mediconnect.ui.userTheme
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -54,6 +55,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.PeopleAlt
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
@@ -91,6 +93,7 @@ fun UserLoginScreen(
         Text(
             text = stringResource(R.string.app_name),
             style = BalooTypography.titleMedium,
+            color = Color.Black,
             modifier = Modifier
                 .padding(top = 50.dp)
         )
@@ -116,6 +119,7 @@ fun UserLoginScreen(
                 Text(
                     text = stringResource(R.string.welcome),
                     style = ArimaTypography.displayLarge,
+                    color = Color.Black,
                     modifier = Modifier
                         .padding(bottom = 20.dp, top = 20.dp)
                 )
@@ -249,7 +253,9 @@ fun LoginUserButton(
         enabled = ic.isNotEmpty() && pwd.isNotEmpty() && pwd.length >= 6,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
-            contentColor = Color.White
+            contentColor = Color.White,
+            disabledContainerColor = Color.Black.copy(alpha = 0.2f),
+            disabledContentColor = Color.White.copy(alpha = 0.2f)
         )
     ) {
         Text(
@@ -359,7 +365,7 @@ fun EditUserPwdTextField(
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,    // 聚焦时底线
+                    focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
@@ -381,7 +387,8 @@ fun EditUserPwdTextField(
             ) {
                 Icon(
                     imageVector = if(pwdVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                    contentDescription = if (pwdVisible) "Hide password" else "Show password"
+                    contentDescription = if (pwdVisible) "Hide password" else "Show password",
+                    tint = Color.Black
                 )
             }
 

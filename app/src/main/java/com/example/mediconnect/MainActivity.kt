@@ -6,21 +6,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -29,14 +37,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -44,6 +57,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navigation
 import com.example.mediconnect.data.AccountData
 import com.example.mediconnect.data.DocUiState
 import com.example.mediconnect.data.UserUiState
@@ -55,7 +69,8 @@ import com.example.mediconnect.ui.doctorTheme.DoctorLoginScreen
 import com.example.mediconnect.ui.doctorTheme.PatientsScreen
 import com.example.mediconnect.ui.theme.MediConnectTheme
 import com.example.mediconnect.ui.userTheme.UserLoginScreen
-import com.example.mediconnect.ui.userTheme.UserSignUpScreen
+import com.example.mediconnect.ui.userTheme.UserSignUpScreen1
+import com.example.mediconnect.ui.userTheme.UserSignUpScreen2
 import com.example.mediconnect.ui.userTheme.UserViewModel
 
 
@@ -77,7 +92,7 @@ fun TopBarScreen(
     userViewModel: UserViewModel,
     docUiState: DocUiState,
     userUiState: UserUiState,
-    navigateBack: (AppScreen) -> Unit
+    navigate: (AppScreen) -> Unit
 ) {
     when(currentScreen) {
         AppScreen.DoctorMain -> {
@@ -127,7 +142,7 @@ fun TopBarScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {navigateBack(AppScreen.DoctorMain)}
+                        onClick = {navigate(AppScreen.DoctorMain)}
                     ) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
@@ -138,7 +153,32 @@ fun TopBarScreen(
             )
         }
         AppScreen.UserSignUp -> {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.sign_up_top),
+                        fontSize = 24.sp,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {navigate(AppScreen.UserLogin)}
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = "Back to login page",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(24.dp)
 
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF29E6D2)
+                )
+            )
         }
         AppScreen.ForgotPwd -> {
 
@@ -177,6 +217,7 @@ fun MainPageApp(
 
     val docUiState by docViewModel.docUiState.collectAsState()
     val userUiState by userViewModel.userUiState.collectAsState()
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = AppScreen.valueOf(
         backStackEntry?.destination?.route ?: AppScreen.UserLogin.name
@@ -191,7 +232,7 @@ fun MainPageApp(
                     userViewModel = userViewModel,
                     docUiState = docUiState,
                     userUiState = userUiState,
-                    navigateBack = {if (currentScreen.hasReturn) navController.navigate(it.name) }
+                    navigate = {if (currentScreen.hasReturn) navController.navigate(it.name) }
                 )
         }
     ) { innerPadding ->
@@ -208,6 +249,13 @@ fun MainPageApp(
                 val context = LocalContext.current
                 var ic by remember { mutableStateOf("") }
                 var pwd by remember { mutableStateOf("") }
+                var loginError by remember { mutableStateOf(false) }
+                if (loginError) {
+                    ErrorLoginMessage(
+                        showMessage = loginError,
+                        onDismiss = {loginError = false}
+                    )
+                }
                 UserLoginScreen(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -227,7 +275,7 @@ fun MainPageApp(
                         } else {
                             ic = ""
                             pwd = ""
-                            Toast.makeText(context, "Invalid Account or password.\nPlease input again.", Toast.LENGTH_SHORT).show()
+                            loginError = true
                         }
                     },
                     onSignUpClick = {
@@ -243,6 +291,13 @@ fun MainPageApp(
                 val context = LocalContext.current
                 var id by remember { mutableStateOf("") }
                 var pwd by remember { mutableStateOf("") }
+                var loginError by remember { mutableStateOf(false) }
+                if (loginError) {
+                    ErrorLoginMessage(
+                        showMessage = true,
+                        onDismiss = {loginError = false}
+                    )
+                }
                 DoctorLoginScreen(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -262,7 +317,7 @@ fun MainPageApp(
                         } else {
                             id = ""
                             pwd = ""
-                            Toast.makeText(context, "Invalid Account or password.\nPlease input again.", Toast.LENGTH_SHORT).show()
+                            loginError = true
                         }
                     },
                     onTurnUsersClick = {
@@ -279,11 +334,37 @@ fun MainPageApp(
             }
 
             composable(route = AppScreen.UserSignUp.name) {
-                UserSignUpScreen(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                )
+                var existPatient by remember { mutableStateOf<Boolean?>(null) }
+                var ic by remember { mutableStateOf("") }
+                var name by remember { mutableStateOf("") }
+                var read by remember { mutableStateOf(false) }
+                var screen by remember { mutableIntStateOf(1) }
+
+                when (screen) {
+                    1 -> UserSignUpScreen1(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colorScheme.background),
+                        existPatient = existPatient,
+                        onChangeExistPatient = {existPatient = it},
+                        ic = ic,
+                        onChangeIc = {ic = it},
+                        name = name,
+                        onChangeName = {name = it},
+                        read = read,
+                        onChangeRead = {read = it},
+                        onNextClick = {screen = 2}
+                    )
+                    2 -> UserSignUpScreen2(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colorScheme.background),
+                        onBackClick = {screen = 1}
+                    )
+                }
             }
+
+
 
             composable(route = AppScreen.DoctorMain.name) {
                 DoctorHomeScreen(
@@ -307,6 +388,8 @@ fun MainPageApp(
                     onPatientDetailClick = {},
                 )
             }
+
+
         }
 
     }
@@ -346,5 +429,26 @@ private fun checkLogin(
     }
 
     return checkAccountValid
+}
+
+@Composable
+private fun ErrorLoginMessage(
+    showMessage: Boolean,
+    onDismiss: () -> Unit
+) {
+    if (showMessage) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Login Error") },
+            text = { Text("Invalid Account or Password. Please try again.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onDismiss() }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
 

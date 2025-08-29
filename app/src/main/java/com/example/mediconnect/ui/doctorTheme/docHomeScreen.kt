@@ -1,5 +1,6 @@
 package com.example.mediconnect.ui.doctorTheme
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -69,6 +70,7 @@ fun DoctorHomeScreen(
 ) {
     Column(
         modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Row {
             Button(
@@ -228,7 +230,17 @@ fun PatientDetailScreen() {
 
 @Preview(showBackground = true)
 @Composable
-fun Final() {
+fun FinalBright() {
+    DoctorHomeScreen(
+        onPatientClick = {},
+        onProfileClick = {},
+        onAppointmentClick = {}
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun FinalDark() {
     DoctorHomeScreen(
         onPatientClick = {},
         onProfileClick = {},

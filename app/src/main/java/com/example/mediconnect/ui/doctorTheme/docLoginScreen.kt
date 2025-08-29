@@ -65,6 +65,7 @@ fun DoctorLoginScreen(
     onChangeId: (String) -> Unit,
     pwd: String,
     onChangePwd: (String) -> Unit
+
 ) {
     var pwdVisible by remember { mutableStateOf(false) }
 
@@ -83,6 +84,7 @@ fun DoctorLoginScreen(
         Text(
             text = stringResource(R.string.app_name),
             style = BalooTypography.titleMedium,
+            color = Color.Black,
             modifier = Modifier
                 .padding(top = 50.dp)
         )
@@ -108,6 +110,7 @@ fun DoctorLoginScreen(
                 Text(
                     text = stringResource(R.string.welcome),
                     style = ArimaTypography.displayLarge,
+                    color = Color.Black,
                     modifier = Modifier
                         .padding(bottom = 30.dp, top = 50.dp)
                 )
@@ -162,7 +165,7 @@ fun DoctorLoginScreen(
 
                 Spacer(
                     modifier = Modifier
-                        .height(50.dp)
+                        .height(44.dp)
                 )
 
             }
@@ -200,7 +203,9 @@ fun LoginDocButton(
         enabled = id.isNotEmpty() && pwd.isNotEmpty() && pwd.length >= 6,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
-            contentColor = Color.White
+            contentColor = Color.White,
+            disabledContainerColor = Color.Black.copy(alpha = 0.2f),
+            disabledContentColor = Color.White.copy(alpha = 0.2f)
         )
     ) {
         Text(
@@ -333,7 +338,8 @@ fun EditDocPwdTextField(
             ) {
                 Icon(
                     imageVector = if(pwdVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                    contentDescription = if (pwdVisible) "Hide password" else "Show password"
+                    contentDescription = if (pwdVisible) "Hide password" else "Show password",
+                    tint = Color.Black
                 )
             }
 

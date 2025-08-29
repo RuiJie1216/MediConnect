@@ -70,6 +70,7 @@ fun LoginChooseButtonBar(
                     Icon(
                         imageVector = Icons.Outlined.PeopleAlt,
                         contentDescription = null,
+                        tint = Color.Black,
                         modifier = Modifier
                             .padding(start = 67.dp, top = 5.dp)
                     )
@@ -106,6 +107,7 @@ fun LoginChooseButtonBar(
                 Text(
                     text = "Users",
                     fontSize = 13.sp,
+                    color = Color.Black,
                     modifier = Modifier
                         .padding(start = 60.dp)
                 )
@@ -113,6 +115,7 @@ fun LoginChooseButtonBar(
                 Text(
                     text = "Doctors",
                     fontSize = 13.sp,
+                    color = Color.Black,
                     modifier = Modifier
                         .padding(end = 55.dp)
                 )
