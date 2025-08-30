@@ -45,7 +45,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mediconnect.R
 
-// Screen sealed class 定义
 sealed class Screen(val route: String) {
     object MainMenu : Screen("main_menu")
     object Appointment : Screen("appointment")
